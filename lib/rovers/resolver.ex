@@ -1,7 +1,8 @@
 defmodule Rovers.Resolver do
-  alias Rovers.Model, as: RM
+  alias Rovers.Model.Grid, as: Grid
+  alias Rovers.Model.Position, as: Position
 
-  @type statusPosition :: {__MODULE__.status(), RM.Position}
+  @type statusPosition :: {__MODULE__.status(), Position}
 
   @doc """
 
@@ -29,7 +30,7 @@ defmodule Rovers.Resolver do
       {:ok, %Position{direction: :north, vector: %Vector{x: 1, y: 6}}}
 
   """
-  @spec runInstructions(RM.Position.t(), [RM.Position.instructions()], RM.Grid.t()) ::
+  @spec runInstructions(Position.t(), [Position.instructions()], Grid.t()) ::
           __MODULE__.statusPosition()
   def runInstructions(position, instructions, grid) do
     case instructions do
@@ -44,10 +45,10 @@ defmodule Rovers.Resolver do
     end
   end
 
-  @spec getNewPositionStatus(RM.Position.t(), RM.Position.instruction(), RM.Grid.t()) ::
+  @spec getNewPositionStatus(Position.t(), Position.instruction(), Grid.t()) ::
           __MODULE__.statusPosition()
   defp getNewPositionStatus(position, instruction, grid) do
-    newPosition = RM.Position.executeInstruction(position, instruction)
-    {RM.Grid.onGrid?(grid, newPosition.vector), newPosition}
+    newPosition = Position.executeInstruction(position, instruction)
+    {Grid.onGrid?(grid, newPosition.vector), newPosition}
   end
 end
