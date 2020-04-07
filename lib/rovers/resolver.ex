@@ -58,7 +58,7 @@ defmodule Rovers.Resolver do
       [instruction | instructions] ->
         rover = Rover.move(rover, instruction, grid)
 
-        case newRover.status do
+        case rover.status do
           :offGrid -> rover
           :ok -> runInstructions(rover, instructions, grid)
         end
