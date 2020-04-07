@@ -56,11 +56,11 @@ defmodule Rovers.Resolver do
         rover
 
       [instruction | instructions] ->
-        newRover = Rover.move(rover, instruction, grid)
+        rover = Rover.move(rover, instruction, grid)
 
         case newRover.status do
-          :offGrid -> newRover
-          :ok -> runInstructions(newRover, instructions, grid)
+          :offGrid -> rover
+          :ok -> runInstructions(rover, instructions, grid)
         end
     end
   end
