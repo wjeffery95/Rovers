@@ -14,8 +14,8 @@ defmodule Rovers.World do
   defstruct [:grid, :rovers]
 
   @spec start_link(Map.t()) :: pid()
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{})
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts)
   end
 
   @spec lookup_rover(pid(), String.t()) :: Rover.t()
@@ -28,13 +28,13 @@ defmodule Rovers.World do
     GenServer.call(world, {:create, {name, position}})
   end
 
-  @spec move_rover(pid(), String.t(), Position.instruction()) :: Rover.t()
+  @spec move_rover(pid(), String.t(), Position.instruction()) :: :ok | :noRover
   def move_rover(world, name, instruction) do
     GenServer.call(world, {:move, {name, instruction}})
   end
 
   @impl true
-  def init(:ok) do
+  def init(_) do
     defaultGrid = %Grid{height: 10, width: 10}
     {:ok, %__MODULE__{grid: defaultGrid, rovers: %{}}}
   end
@@ -47,10 +47,10 @@ defmodule Rovers.World do
   @impl true
   def handle_call({:create, {name, position}}, _from, world) do
     case Grid.onGrid?(world.grid, position.vector) do
-      :offGrid ->
+      false ->
         {:reply, :offGrid, world}
 
-      :ok ->
+      true ->
         rover = %Rover{position: position, status: :ok}
         rovers = Map.put(world.rovers, name, rover)
         {:reply, :ok, %__MODULE__{grid: world.grid, rovers: rovers}}
@@ -59,11 +59,14 @@ defmodule Rovers.World do
 
   @impl true
   def handle_call({:move, {name, instruction}}, _from, %{grid: grid, rovers: rovers}) do
-    rover =
-      rovers
-      |> Map.pop(rovers, name)
-      |> Rover.move(instruction, grid)
+    case Map.pop(rovers, name) do
+      {nil, _} ->
+        {:reply, :noRover, %__MODULE__{grid: grid, rovers: rovers}}
 
-    {:reply, rover, %__MODULE__{grid: grid, rovers: Map.put(rovers, name, rover)}}
+      {rover, rovers} ->
+        rover = Rover.move(rover, instruction, grid)
+        world = %__MODULE__{grid: grid, rovers: Map.put(rovers, name, rover)}
+        {:reply, rover.status, world}
+    end
   end
 end
