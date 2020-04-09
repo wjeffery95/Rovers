@@ -15,7 +15,7 @@ defmodule Rovers.World do
 
   @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts)
+    GenServer.start_link(__MODULE__, :ok, opts)
   end
 
   @spec lookup_rover(pid(), String.t()) :: {:ok, Rover.t()} | {:error, :noRover}
