@@ -67,4 +67,9 @@ defmodule Rovers.Model.Position do
 
     %__MODULE__{direction: newDirection, vector: vector}
   end
+
+  @spec create(__MODULE__.direction(), integer, integer) :: __MODULE__.t()
+  def create(direction, x, y) do
+    %__MODULE__{direction: direction, vector: %Vector{x: x, y: y}}
+  end
 end
