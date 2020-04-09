@@ -13,7 +13,7 @@ defmodule Rovers.World do
   @enforce_keys [:grid, :rovers]
   defstruct [:grid, :rovers]
 
-  @spec start_link(Map.t()) :: pid()
+  @spec start_link(any) :: :ignore | {:error, any} | {:ok, pid}
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts)
   end
